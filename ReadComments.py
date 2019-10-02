@@ -85,7 +85,7 @@ def create_gh_issue(repo_space, project_name, gh_token, record):
     create_issue_url = base_github_url + api_end_point
 
     issue_title = record["title"]
-    issue_desc = "This issue was migrated from [pagure ticket #{0}](https://pagure.io/dogtagpki/issue/{0}). " \
+    issue_desc = "This issue was migrated from [Pagure Issue #{0}](https://pagure.io/dogtagpki/issue/{0}). " \
                  "Originally filed by {1} on {2}\n\n {3}".format(
         record["id"],
         record["user"]["name"],
