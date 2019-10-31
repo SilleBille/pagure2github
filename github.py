@@ -68,8 +68,6 @@ class Github:
 
         response = requests.post(url=create_issue_url, data=json.dumps(body_params), headers=self.header_params)
 
-        print (response.json())
-
         if response.status_code == 201:
             print('Created new GH issue for: {0}'.format(str(record['id'])))
             return response.json()['number']
