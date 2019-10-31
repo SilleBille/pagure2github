@@ -1,6 +1,7 @@
 import requests
 import json
 
+
 class Pagure:
     base_pagure_url = "https://pagure.io"
 
@@ -80,9 +81,8 @@ class Pagure:
         result = requests.post(url=change_issue_status_url,
                                data=json.dumps(body_params),
                                headers=self.header_params)
-        print(result.text)
 
         if "status updated" in result.text:
-            print("Successfully closed {0} issue".format(issue_id))
+            print("Successfully closed Pagure issue #{0}".format(issue_id))
         else:
             print("Failed to close {0} issue".format(issue_id))

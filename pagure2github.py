@@ -61,4 +61,4 @@ if __name__ == "__main__":
         p.change_issue_status(issue_id=issue["id"], close_status=pg_status)
 
         print("====== Completed pagure issue {0} =====".format(issue["id"]))
-
+        print()
