@@ -64,7 +64,7 @@ class Github:
 
         if len(record['tags']) > 0:
             for tag in record['tags']:
-                body_params['labels'].append(tag)
+                body_params.setdefault('labels', []).append(tag)
 
         response = requests.post(url=create_issue_url, data=json.dumps(body_params), headers=self.header_params)
 
