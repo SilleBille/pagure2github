@@ -32,7 +32,7 @@ parser.add_argument(
 parser.add_argument(
     "-i",
     "--issues-file",
-    help="File path to store issues info (needed for Stage 2 and Stage 3",
+    help="File path to store issues info (needed for Stage 2 and Stage 3)",
 )
 parser.add_argument(
     "-g",
@@ -48,15 +48,20 @@ parser.add_argument(
     help="Pagure repo in a format user/repo-name (dogtagpki/pki)",
 )
 
+# Add command to create GH issues based on Pagure issues
 subcommands = parser.add_subparsers(help="action")
 create_gh_parser = subcommands.add_parser(
     "create-gh-issues", help="Create GitHub issues using Pagure info"
 )
 create_gh_parser.set_defaults(func=pagure2github.copy_issues)
+
+# Add command to close Pagure with relevant comment, adding link to our new GH issue
 update_pagure_parser = subcommands.add_parser(
     "update-pagure", help="Update Pagure issues"
 )
 update_pagure_parser.set_defaults(func=pagure2github.update_pagure_issues)
+
+# Update BZ to point to the new GH issue created
 update_bz_parser = subcommands.add_parser("update-bugzillas", help="Update Bugzillas")
 update_bz_parser.set_defaults(func=pagure2github.update_bugzillas)
 

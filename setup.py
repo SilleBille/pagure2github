@@ -2,9 +2,11 @@
 
 # --- BEGIN COPYRIGHT BLOCK ---
 # Copyright (C) 2020
+#
 # Authors:
 #   Simon Pichugin <simon.pichugin@gmail.com>
 #   Dinesh Prasanth M K <dmoluguw@redhat.com>
+#
 # All rights reserved.
 #
 # License: GPL (version 3 or any later version).

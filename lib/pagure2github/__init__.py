@@ -14,7 +14,7 @@
 import time
 import datetime
 import getpass
-from .pagure import fetch_issues, fetch_pull_requests, PagureWorker
+from .pagure import fetch_issues, PagureWorker
 from .github import GithubWorker
 from .bugzilla import BugzillaWorker
 from github import GithubException
@@ -104,11 +104,9 @@ def get_labels(issue):
 
 def format_description_issue(issue):
     out = ""
-    out += (
-        f"Cloned from Pagure issue: https://pagure.io/389-ds-base/issue/{issue['id']}\n"
-    )
+    out += f"This issue was migrated from [Pagure Issue #{pr['id']}](https://pagure.io/dogtagpki/issue/{pr['id']})." \
 
-    out += f"- Created at {format_time(issue['date_created'])} by {format_user(issue['user'])}\n"
+    out += f" - Originally filed by **{format_user(pr['user'])}** on *{format_time(pr['date_created'])}*:\n\n {3}"
 
     if issue["status"] == "Closed":
         if "closed_at" in issue and issue["closed_at"] is not None:
@@ -129,27 +127,6 @@ def format_description_issue(issue):
 
     out += "\n---\n\n"
     content = cleaup_references(issue["content"].strip())
-    out += content
-
-    return out
-
-
-def format_description_pr(pr):
-    out = ""
-    out += f"Cloned from Pagure Pull-Request: https://pagure.io/389-ds-base/pull-request/{pr['id']}\n"
-
-    out += (
-        f"- Created at {format_time(pr['date_created'])} by {format_user(pr['user'])}\n"
-    )
-
-    if pr["status"] != "Open":
-        out += f"- Merged at {format_time(pr['closed_at'])}\n"
-
-    out += "\n---\n\n"
-    try:
-        content = cleaup_references(pr["initial_comment"].strip())
-    except AttributeError:
-        content = ""
     out += content
 
     return out
@@ -225,84 +202,47 @@ def copy_issues(args, log):
     g_key = getpass.getpass("GitHub API Key: ")
     g = GithubWorker(g_repo, g_key, log)
 
-    issue_jsons = sorted(
-        fetch_pull_requests() + fetch_issues(), key=lambda b: int(b["id"])
-    )
+    issue_jsons = sorted(fetch_issues(), key=lambda b: int(b["id"]))
     for issue in issue_jsons:
         if g.rate_limit.core.remaining < 100:
             wait_for_rate_reset(log, g.rate_limit.core.reset)
 
-        # It is a pull request
-        if "branch" in issue:
-            pr = issue
+        is_closed = "Closed" in issue["status"]
+        params = {
+            "title": issue["title"],
+            "body": format_description_issue(issue),
+            "labels": get_closed_labels(issue, is_closed) + get_labels(issue),
+        }
+        if issue["milestone"] and issue["milestone"].lower() != "n/a":
+            params["milestone"] = issue["milestone"]
+        comments = []
 
-            is_closed = True  # Always close a PR
-            params = {
-                "title": f'PR - {pr["title"]}',
-                "body": format_description_pr(pr),
-                "labels": ["PR", pr["status"]],
-            }
-            comments = []
-            for c in pr["comments"]:
-                comment = cleaup_references(c["comment"])
-                comment = comment.replace(
-                    "/389-ds-base/issue/raw/files/",
-                    "https://fedorapeople.org/groups/389ds/github_attachments/",
-                )
-                comments.append(
-                    {
-                        "body": f"**Comment from {format_user(c['user'])} at "
-                        f"{format_comment_time(pr, c)}**\n\n{comment}"
-                    }
-                )
-            comments_params = {"comments": comments}
-            try:
-                issue_gh = g.ensure_issue(params, comments_params, is_closed)
-                with open(issues_file, "a+") as f:
-                    f.write(f'pr:{pr["id"]}:{issue_gh.number}:\n')
-                existent_comments = issue_gh.get_comments()
-                pr_comment = {
-                    "body": f"Patch\n[{pr['id']}.patch](https://fedorapeople.org/groups/389ds/github_attachments/{pr['id']}.patch)"
+        # Post all comments in the Pagure issue
+        for c in issue["comments"]:
+            comment = cleaup_references(c["comment"])
+
+            # TODO: Fix this to upload within github
+            comment = comment.replace(
+                "/dogtagpki/issue/raw/files/",
+                "https://fedorapeople.org/groups/389ds/github_attachments/",
+            )
+            comments.append(
+                {
+                    "body": f"**Comment from {format_user(c['user'])} at "
+                    f"{format_comment_time(issue, c)}**\n\n{comment}"
                 }
-                g.ensure_comment(issue_gh, existent_comments, pr_comment)
-            except GithubException as e:
-                if "blocked from content creation" in str(e):
-                    wait_for_rate_reset(log, g.rate_limit.core.reset)
-
-        # It is an issue
-        else:
-            is_closed = "Closed" in issue["status"]
-            params = {
-                "title": issue["title"],
-                "body": format_description_issue(issue),
-                "labels": get_closed_labels(issue, is_closed) + get_labels(issue),
-            }
-            if issue["milestone"] and issue["milestone"].lower() != "n/a":
-                params["milestone"] = issue["milestone"]
-            comments = []
-            for c in issue["comments"]:
-                comment = cleaup_references(c["comment"])
-                comment = comment.replace(
-                    "/389-ds-base/issue/raw/files/",
-                    "https://fedorapeople.org/groups/389ds/github_attachments/",
-                )
-                comments.append(
-                    {
-                        "body": f"**Comment from {format_user(c['user'])} at "
-                        f"{format_comment_time(issue, c)}**\n\n{comment}"
-                    }
-                )
-            comments_params = {"comments": comments}
-            try:
-                issue_gh = g.ensure_issue(params, comments_params, is_closed)
-                bugs = get_bugs(issue)
-                if bugs:
-                    bz_numbers = ",".join([b.split("=")[1] for b in bugs])
-                with open(issues_file, "a+") as f:
-                    f.write(f'i:{issue["id"]}:{issue_gh.number}:{bz_numbers}\n')
-            except GithubException as e:
-                if "blocked from content creation" in str(e):
-                    wait_for_rate_reset(log, g.rate_limit.core.reset)
+            )
+        comments_params = {"comments": comments}
+        try:
+            issue_gh = g.ensure_issue(params, comments_params, is_closed)
+            bugs = get_bugs(issue)
+            if bugs:
+                bz_numbers = ",".join([b.split("=")[1] for b in bugs])
+            with open(issues_file, "a+") as f:
+                f.write(f'i:{issue["id"]}:{issue_gh.number}:{bz_numbers}\n')
+        except GithubException as e:
+            if "blocked from content creation" in str(e):
+                wait_for_rate_reset(log, g.rate_limit.core.reset)
 
 
 def update_pagure_issues(args, log):

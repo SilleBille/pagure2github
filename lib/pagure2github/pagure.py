@@ -30,15 +30,6 @@ def fetch_issues():
     return issue_jsons
 
 
-def fetch_pull_requests():
-    prs = [f for f in listdir(PRS_DIR) if isfile(join(PRS_DIR, f))]
-    pr_jsons = []
-    for pr in prs:
-        with open(join(PRS_DIR, pr)) as f:
-            pr_jsons.append(json.loads(f.read()))
-    return pr_jsons
-
-
 class PagureWorker:
     def __init__(self, repo, api_key, log):
         self.api = Pagure(pagure_token=api_key, repo_to=repo)
