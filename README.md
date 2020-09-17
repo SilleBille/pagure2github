@@ -1,31 +1,31 @@
-# patogith
-Fork of [ droideck/patogith](https://github.com/droideck/patogith)
+# pagure2github
 
-A simple tool for Pagure to GitHub migration.
+Fork of [droideck/patogith](https://github.com/droideck/patogith). Original credits to [Simon Pichugin](https://github.com/droideck)
+
+A simple tool for Pagure issues to GitHub issues migration.
 
 *Remember to test the process before doing it on production!*
 
 ## Installation
-The library is written with 389-ds-base repository in mind. You need to change a few things to make it work for your repo.
+
+The library is re-written with dogtagpki/pki repository in mind. You need to change a few things to make it work for your repo.
 Please, go to `lib/patogith/__init__.py`, look at the comment section at the top of the file and modify it according to your needs.
 
-`Patogith` can be installed using `pip`. Run from the root repo directory:
+`pagure2github` can be installed using `pip`. Run from the root repo directory:
 
-    $ python3 -m pip install ./
+    python3 -m pip install ./
 
 ## Usage
-First, go to your repo and clone Pagure issues and pull-requests to the working directory. You can find the links if
-you got to your pagure repository web page (i.e. https://pagure.io/389-ds-base) and click on `Clone` button.
 
-    $ git clone ssh://git@pagure.io/tickets/389-ds-base.git tickets
-    $ git clone ssh://git@pagure.io/requests/389-ds-base.git requests
+First, go to your repo and clone Pagure issues to the working directory. You can find the links if
+you got to your pagure repository web page (i.e. https://pagure.io/dogtagpki) and click on `Clone` button.
 
-Additionally, you can upload the attachments to some public server (including PR patches).
+    git clone ssh://git@pagure.io/tickets/dogtagpki.git tickets
 
 And then, you can just run the program.
-`Patogith` is an interactive tool. Simply run it and answer the questions:
+`pagure2github` is an interactive tool. Simply run it and answer the questions:
 
-    $ patogith create-gh-issues         # Stage 1. Create GitHub issues using Pagure info
-    $ patogith update-pagure            # Stage 2. Update Pagure issues
-    $ patogith update-bugzillas         # Stage 3. Update Bugzillas
-    $ patogith close-unused-milestones  # Stage 4. Close Unused Milestones
+    pagure2github create-gh-issues         # Stage 1. Create GitHub issues using Pagure info
+    pagure2github update-pagure            # Stage 2. Update Pagure issues
+    pagure2github update-bugzillas         # Stage 3. Update Bugzillas
+    pagure2github close-unused-milestones  # Stage 4. Close Unused Milestones

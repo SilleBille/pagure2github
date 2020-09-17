@@ -1,7 +1,10 @@
 #!/usr/bin/python3
 
 # --- BEGIN COPYRIGHT BLOCK ---
-# Copyright (C) 2020 Simon Pichugin <simon.pichugin@gmail.com>
+# Copyright (C) 2020
+# Authors:
+#   Simon Pichugin <simon.pichugin@gmail.com>
+#   Dinesh Prasanth M K <dmoluguw@redhat.com>
 # All rights reserved.
 #
 # License: GPL (version 3 or any later version).
@@ -24,35 +27,29 @@ with open(path.join(here, 'README.md'), 'r') as f:
     long_description = f.read()
 
 setup(
-    name='patogith',
+    name='pagure2github',
     license='GPLv3+',
     version=version,
-    description='A simple tool for pagure to github migration',
+    description='A simple tool for Pagure issues to Github issues migration',
     long_description=long_description,
-    url='https://github.com/droideck/patogith',
-    author='Simon Pichugin',
-    author_email='simon.pichugin@gmail.com',
+    url='https://github.com/SilleBille/pagure2github/',
+    author='Dinesh Prasanth M K',
+    author_email='dmoluguw@redhat.com',
 
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Topic :: Software Development :: Tool',
         'Topic :: Software Development :: Migration'],
 
-    keywords='pagure github migration',
-    packages=['patogith'],
+    keywords='Pagure issues to Github issues migration',
+    packages=['pagure2github'],
     package_dir={'': 'lib', },
 
-    data_files=[
-        ('/usr/sbin/', [
-            'cli/patogith',
-            ]),
-    ],
+    scripts=['cli/pagure2github'],
 
     install_requires=[
         'pygithub',
