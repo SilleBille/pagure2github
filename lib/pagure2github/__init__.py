@@ -104,11 +104,12 @@ def get_labels(issue):
     return labels
 
 
-def format_description_issue(issue):
+def format_description_issue(p_repo, issue):
     out = ""
-    out += f"This issue was migrated from [Pagure Issue #{issue['id']}](https://pagure.io/dogtagpki/issue/{issue['id']})."
+    out += f"This issue was migrated from " \
+           f"[Pagure Issue #{issue['id']}](https://pagure.io/{p_repo}/issue/{issue['id']}). "
 
-    out += f" - Originally filed by **{format_user(issue['user'])}** on *{format_time(issue['date_created'])}*:\n\n {3}"
+    out += f"Originally filed by **{format_user(issue['user'])}** on *{format_time(issue['date_created'])}*:\n\n"
 
     if issue["status"] == "Closed":
         if "closed_at" in issue and issue["closed_at"] is not None:
@@ -167,8 +168,8 @@ def format_user(user):
         return f"[{user['name']}](https://pagure.io/user/{user['name']})"
 
 
-def format_comment_time(issue, comment):
-    return f"[{format_time(comment['date_created'])}](https://pagure.io/389-ds-base/issue/{issue['id']})"
+def format_comment_time(p_repo, issue, comment):
+    return f"[{format_time(comment['date_created'])}](https://pagure.io/{p_repo}/issue/{issue['id']})"
 
 
 def wait_for_rate_reset(log, reset_time):
@@ -207,32 +208,23 @@ def copy_issues(args, log):
     p_key = getpass.getpass("Pagure API Key: ")
     p = PagureWorker(p_repo, p_key, log)
 
-    starting_number = 0
-    last_number = 51300
-    id = starting_number
-    while True:
+    last_number = len(p.api.list_issues(status='all'))
+    for id in range(1, last_number+1):
+
         try:
             issue = p.api.issue_info(id)
             log.info(f"Issue {id} was found!")
         except Exception as ex:
             log.info(ex)
-            try:
-                issue = p.api.request_info(id)
-                log.info(f"PR {id} was found!")
-            except Exception as ex:
-                log.info(ex)
-                id = id + 1
-                if id == last_number:
-                    break
-                else:
-                    continue
+            continue
+
         if g.rate_limit.core.remaining < 100:
             wait_for_rate_reset(log, g.rate_limit.core.reset)
 
         is_closed = "Closed" in issue["status"]
         params = {
             "title": issue["title"],
-            "body": format_description_issue(issue),
+            "body": format_description_issue(p_repo, issue),
             "labels": get_closed_labels(issue, is_closed) + get_labels(issue),
         }
         if issue["milestone"] and issue["milestone"].lower() != "n/a":
@@ -245,13 +237,13 @@ def copy_issues(args, log):
 
             # TODO: Fix this to upload within github
             comment = comment.replace(
-                "/dogtagpki/issue/raw/files/",
+                f"/{p_repo}/issue/raw/files/",
                 "https://fedorapeople.org/groups/389ds/github_attachments/",
             )
             comments.append(
                 {
                     "body": f"**Comment from {format_user(c['user'])} at "
-                    f"{format_comment_time(issue, c)}**\n\n{comment}"
+                    f"{format_comment_time(p_repo, issue, c)}**\n\n{comment}"
                 }
             )
         comments_params = {"comments": comments}
