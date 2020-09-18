@@ -65,13 +65,21 @@ update_pagure_parser.set_defaults(func=pagure2github.update_pagure_issues)
 update_bz_parser = subcommands.add_parser("update-bugzillas", help="Update Bugzillas")
 update_bz_parser.set_defaults(func=pagure2github.update_bugzillas)
 
-update_bz_parser = subcommands.add_parser(
+update_close_unused_milestones_parser = subcommands.add_parser(
     "close-unused-milestones", help="Close Unused Milestones"
 )
-update_bz_parser.set_defaults(func=pagure2github.close_unused_milestones)
+update_close_unused_milestones_parser.set_defaults(func=pagure2github.close_unused_milestones)
+
+check_gh_pg_statuses_parser = subcommands.add_parser("check-issue-statuses", help="Check that all issues have the right statuses")
+check_gh_pg_statuses_parser.set_defaults(func=pagure2github.check_gh_pg_statuses)
+
+fix_pg_reference_on_gh_parser = subcommands.add_parser("fix-references-comments", help="Replace issue/PR links with #0000 references")
+fix_pg_reference_on_gh_parser.set_defaults(func=pagure2github.fix_pg_reference_on_gh)
+
+fix_documentation_parser = subcommands.add_parser("fix-documentation-files", help="Replace Pagure links with GitHub links in a tree")
+fix_documentation_parser.set_defaults(func=pagure2github.fix_documentation)
 
 argcomplete.autocomplete(parser)
-
 
 # handle a control-c gracefully
 def signal_handler(signal, frame):
