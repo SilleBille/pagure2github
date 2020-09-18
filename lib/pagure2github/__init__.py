@@ -173,10 +173,13 @@ def format_comment_time(p_repo, issue, comment):
 
 
 def wait_for_rate_reset(log, reset_time):
-    resetts = int(reset_time.timestamp()) + 2 * 60 * 60  # Time difference
-    sleeptime = resetts - int(datetime.datetime.now().timestamp())
+    dt_now = datetime.datetime.utcnow().timestamp()
+    resetts = int(reset_time.timestamp())
+
+    sleeptime = resetts - int(dt_now)
     log.info(f"Sleeping till {reset_time} + 10 seconds")
     if sleeptime > 0:
+        log.warning(f"Sleeping for {sleeptime} seconds")
         time.sleep(sleeptime)
     time.sleep(10)
 
@@ -208,14 +211,16 @@ def copy_issues(args, log):
     p_key = getpass.getpass("Pagure API Key: ")
     p = PagureWorker(p_repo, p_key, log)
 
-    last_number = len(p.api.list_issues(status='all'))
+    last_number = p.api.list_issues(status='all')[0]['id']
+    log.info(f"Last issue ID: {last_number}")
+
     for id in range(1, last_number+1):
 
         try:
             issue = p.api.issue_info(id)
             log.info(f"Issue {id} was found!")
         except Exception as ex:
-            log.info(ex)
+            log.error(ex)
             continue
 
         if g.rate_limit.core.remaining < 100:
