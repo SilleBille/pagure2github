@@ -26,11 +26,10 @@ class PagureWorker:
         will be reported only in [dogtagpki's github issues](https://github.com/{g_repo}/issues).
 
         This issue has been cloned to Github and is available here:
-        - https://github.com/{g_repo}/issues/{gh_issue_id}
+        https://github.com/{g_repo}/issues/{gh_issue_id}
 
         If you want to receive further updates on the issue, please navigate
-        [to the github issue](https://github.com/{g_repo}/issues/{gh_issue_id})
-        and click on `subscribe` button.
+        [to the github issue](https://github.com/{g_repo}/issues/{gh_issue_id}) and click on `subscribe` button.
 
         Thank you for understanding. We apologize for any inconvenience.
         """
@@ -40,7 +39,7 @@ class PagureWorker:
 
     def close_issue(self, pq_issue_id, status=None):
         # Close the status as Migrated/Fixed, only if the issue is NOT closed
-        if not self.api.issue_info(pq_issue_id)['close_status']:
+        if self.api.issue_info(pq_issue_id)['status'].lower() == 'open':
             if status is None:
                 status = "Fixed"
             self.log.info(f"Closing issue {pq_issue_id} with '{status}' status")

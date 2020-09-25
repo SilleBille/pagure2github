@@ -319,6 +319,7 @@ def close_unused_milestones(args, log):
         if milestone.title.lower() not in MILESTONE_LIST:
             g.close_milestone(milestone)
 
+
 def check_gh_pg_statuses(args, log):
     issues_file, g_repo, p_repo = validate_args(args)
     g_key = getpass.getpass("GitHub API Key: ")
