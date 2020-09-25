@@ -67,6 +67,7 @@ LABELS = {
     "wontfix": "Closed: Won't fix",
     "duplicate": "Closed: Duplicate",
     "worksforme": "Closed: Works for me",
+    "insufficient_data": "Closed: Insufficient Data"
 }
 # Make sure to go over the links and modify it according to your needs
 # - copy_issues() - change attachments list
@@ -277,8 +278,8 @@ def update_pagure_issues(args, log):
                 if line.startswith("i"):
                     pg_issue_id = l_items[1]
                     gh_issue_id = l_items[2]
-                    p.comment_on_issue(pg_issue_id, gh_issue_id)
-                    p.close_issue(pg_issue_id, status="wontfix")
+                    p.comment_on_issue(pg_issue_id, gh_issue_id, g_repo)
+                    p.close_issue(pg_issue_id, status="migrated")
                 else:
                     log.warning(f"Line {line} has a wrong format and won't be updated")
             else:
