@@ -328,22 +328,22 @@ def check_gh_pg_statuses(args, log):
     p = PagureWorker(p_repo, p_key, log)
 
     with open(issues_file, "r") as f:
-        i = 0
+        # i = 0
         for line in f.readlines():
-            i = i + 1
-            # Start from certain point (line number)
-            #if i < 1366:
-            #    continue
+            # i = i+1
+            # if i<1485:
+            #     continue
             l_items = line.split(":")
             if line.startswith("i"):
                 pg = l_items[1]
                 gh = l_items[2]
                 issue = p.api.issue_info(int(pg))
                 gissue = g.repo.get_issue(int(gh))
-                if issue['status'].lower() == gissue.state.lower():
+                if issue['status'].lower() == gissue.state.lower() and issue['title'] == gissue.title:
                     isok = "yes"
                 else:
                     isok = "no"
+                    log.error("==== Mismatch found (see below): ====")
                 log.info(f"pg {pg} - {issue['status']}, gh {gh} - {gissue.state} -- {isok}")
 
 

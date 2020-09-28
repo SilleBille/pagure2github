@@ -75,3 +75,18 @@ Once you are done with all pre-requisite, you can just run the program one stage
     pagure2github close-unused-milestones  # Stage 5. Close Unused Milestones
     pagure2github fix-references-comments  # Stage 6. Replace issue/PR links with \#0000 references
     pagure2github fix-documentation-files  # Stage 7. Replace Pagure links with GitHub links in a tree
+
+### Stage 1: Copy issues from Pagure to Github
+
+This stage **copies all Pagure issues to Github Issues**
+
+    pagure2github -p <Pagure Repo> -g <Github Repo> -i <Log File> -v create-gh-issues
+
+**NOTE:** The `<Log File>` will be used in all other stages. Please keep this handy and safe.
+
+### Stage 2: Check if all issues have been copied correctly
+
+This stage **checks if all the issues have been copied correctly** into Github Issues, by reading the `<Log File>`
+generated in previous stage
+
+    pagure2github -p <Pagure Repo> -g <Github Repo> -i <Log File> -v check-issue-statuses
