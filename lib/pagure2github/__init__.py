@@ -244,7 +244,7 @@ def copy_issues(args, log):
             # TODO: Fix this to upload within github
             comment = comment.replace(
                 f"/{p_repo}/issue/raw/files/",
-                "https://fedorapeople.org/groups/389ds/github_attachments/",
+                f"https://raw.githubusercontent.com/wiki/{g_repo}/issues/",
             )
             comments.append(
                 {
