@@ -14,6 +14,7 @@
 import textwrap
 from libpagure import Pagure
 
+
 class PagureWorker:
     def __init__(self, repo, api_key, log):
         self.api = Pagure(pagure_token=api_key, repo_to=repo)
@@ -22,14 +23,14 @@ class PagureWorker:
     def comment_on_issue(self, pg_issue_id, gh_issue_id, g_repo):
         msg = textwrap.dedent(
             f"""
-        dogtagpki is moving from Pagure issues to Github issues. This means that new issues
-        will be reported only in [dogtagpki's github issues](https://github.com/{g_repo}/issues).
+        dogtagpki is moving from Pagure issues to Github issues. This means that new
+        issues will be reported only in [dogtagpki's github issues](https://github.com/{g_repo}/issues).
 
         This issue has been cloned to Github and is available here:
         https://github.com/{g_repo}/issues/{gh_issue_id}
 
-        If you want to receive further updates on the issue, please navigate
-        [to the github issue](https://github.com/{g_repo}/issues/{gh_issue_id}) and click on `subscribe` button.
+        If you want to receive further updates on the issue, please navigate to the
+        [github issue](https://github.com/{g_repo}/issues/{gh_issue_id}) and click on `subscribe` button.
 
         Thank you for understanding. We apologize for any inconvenience.
         """

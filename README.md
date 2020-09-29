@@ -90,3 +90,10 @@ This stage **checks if all the issues have been copied correctly** into Github I
 generated in previous stage
 
     pagure2github -p <Pagure Repo> -g <Github Repo> -i <Log File> -v check-issue-statuses
+
+
+### Stage 3: Close Pagure Issues with a comment
+
+This stage **adds a comment on the pagure issue with a link to the migrated GH issue**, by reading the `<Log File>` generated in the Step 1
+
+    pagure2github -p <Pagure repo> -g <Github Repo> -i <Log File> -v update-pagure
