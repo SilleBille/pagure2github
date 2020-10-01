@@ -201,8 +201,6 @@ def format_description_issue(p_repo, issue):
 
 
 def cleaup_references(content):
-    for nickname_pg, nickname_gh in NICKNAME_LIST.items():
-        content = content.replace(nickname_pg, nickname_gh)
     if "#" in content:
         i = 0
         while True:
