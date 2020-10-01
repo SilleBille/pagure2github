@@ -44,6 +44,15 @@ you got to your pagure repository web page (i.e. https://pagure.io/dogtagpki) an
 **NOTE:** Though this API key is generated for project, this is specific to YOU (ie) comments/modifications made to any
 tikcets will be done by YOU!
 
+#### Bugzilla
+
+1. Login to bugzilla instance
+2. Goto your [profile > Preferences](https://partner-bugzilla.redhat.com/userprefs.cgi)
+3. Click on [API Keys](https://partner-bugzilla.redhat.com/userprefs.cgi?tab=apikey)
+4. Enter optional description to identify this key
+5. Click on **Submit Changes**
+6. The key will be displayed on the screen only ONCE
+
 ### Pagure Modifications
 
 #### Set the pagure to read-only
@@ -72,9 +81,6 @@ Once you are done with all pre-requisite, you can just run the program one stage
     pagure2github check-issue-statuses     # Stage 2. Check that all issues have the right statuses
     pagure2github update-pagure            # Stage 3. Update Pagure issues
     pagure2github update-bugzillas         # Stage 4. Update Bugzillas
-    pagure2github close-unused-milestones  # Stage 5. Close Unused Milestones
-    pagure2github fix-references-comments  # Stage 6. Replace issue/PR links with \#0000 references
-    pagure2github fix-documentation-files  # Stage 7. Replace Pagure links with GitHub links in a tree
 
 ### Stage 1: Copy issues from Pagure to Github
 
@@ -91,9 +97,14 @@ generated in previous stage
 
     pagure2github -p <Pagure Repo> -g <Github Repo> -i <Log File> -v check-issue-statuses
 
-
 ### Stage 3: Close Pagure Issues with a comment
 
-This stage **adds a comment on the pagure issue with a link to the migrated GH issue**, by reading the `<Log File>` generated in the Step 1
+This stage **adds a comment on the pagure issue with a link to the migrated GH issue**, by reading the `<Log File>` generated in the Stage 1
 
-    pagure2github -p <Pagure repo> -g <Github Repo> -i <Log File> -v update-pagure
+    pagure2github -p <Pagure Repo> -g <Github Repo> -i <Log File> -v update-pagure
+
+### Stage 4: Update Bugzilla with links to GH issue
+
+This stages **updates Devel Whiteboard** in the format "PKI &lt;GH issue ID&gt;" and also **adds an external link** to the respective GH issue, by reading the `<Log File>` generated in Stage 1
+
+    pagure2github -p <Pagure Repo> -g <Github Repo> -i <Log File> -v update-bugzillas

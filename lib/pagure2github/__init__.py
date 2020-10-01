@@ -351,28 +351,30 @@ def update_pagure_issues(args, log):
 
 
 def update_bugzillas(args, log):
-    issues_file, _, _, = validate_args(args)
+    issues_file, g_repo, _, = validate_args(args)
     b_key = getpass.getpass("Bugzilla API Key: ")
     b = BugzillaWorker("bugzilla.redhat.com", b_key, log)
-    # b = BugzillaWorker("partner-bugzilla.redhat.com", b_key, log)
+    #b = BugzillaWorker("partner-bugzilla.redhat.com", b_key, log)
 
     with open(issues_file, "r") as f:
+        #for line in ['i:1110:1102:790924' ]:
         for line in f.readlines():
-            bz_ids = []
             if line.startswith("i"):
                 l_items = line.split(":")
-                if len(l_items) > 1:
+                if len(l_items) > 3:
                     pg_issue_id = l_items[1]
                     gh_issue_id = l_items[2]
-                if len(l_items) > 3:
                     bz_ids = l_items[3].split(",")
-                for bz_id in bz_ids:
-                    bz_id = bz_id.replace("\n", "")
-                    try:
-                        int(bz_id)
-                        b.update_bugzilla(bz_id, pg_issue_id, gh_issue_id)
-                    except Exception:
-                        log.info(f"pg = {pg_issue_id}, gh = {gh_issue_id}, bz = {bz_id}")
+                    for bz_id in bz_ids:
+                        bz_id = bz_id.replace("\n", "")
+                        try:
+                            b.update_bugzilla(bz_id, pg_issue_id, gh_issue_id, g_repo)
+                        except Exception:
+                            log.error(f"Error: pg = {pg_issue_id}, gh = {gh_issue_id}, bz = {bz_id}")
+                else:
+                    log.info(f"Skipping since no BZ linked to Pagure: {pg_issue_id}")
+            else:
+                log.info(f"Line doesn't start with i. Wrong format found: {line}")
 
 
 def close_unused_milestones(args, log):
