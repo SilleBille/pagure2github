@@ -48,6 +48,12 @@ parser.add_argument(
     help="Pagure repo in a format user/repo-name (dogtagpki/pki)",
 )
 
+parser.add_argument(
+    "--issues-patch-dir",
+    type=str,
+    help="Dir path containing issue attachments to be renamed"
+)
+
 # Add command to create GH issues based on Pagure issues
 subcommands = parser.add_subparsers(help="action")
 create_gh_parser = subcommands.add_parser(
@@ -78,6 +84,9 @@ fix_pg_reference_on_gh_parser.set_defaults(func=pagure2github.fix_pg_reference_o
 
 fix_documentation_parser = subcommands.add_parser("fix-documentation-files", help="Replace Pagure links with GitHub links in a tree")
 fix_documentation_parser.set_defaults(func=pagure2github.fix_documentation)
+
+fix_issue_file_names = subcommands.add_parser("fix-issues-patches", help="Rename the file attachments with the correct GH nickname")
+fix_issue_file_names.set_defaults(func=pagure2github.rename_issue_file_names)
 
 argcomplete.autocomplete(parser)
 

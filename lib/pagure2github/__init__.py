@@ -201,6 +201,8 @@ def format_description_issue(p_repo, issue):
 
 
 def cleaup_references(content):
+    for nickname_pg, nickname_gh in NICKNAME_LIST.items():
+        content = content.replace(nickname_pg, nickname_gh)
     if "#" in content:
         i = 0
         while True:
@@ -529,3 +531,15 @@ def fix_documentation(args, log):
                                 int(i_link.split('https://pagure.io/389-ds-base/issue/')[1])
                     with open(fpath, "w") as f:
                         f.write(file_content)
+
+
+def rename_issue_file_names(args, log):
+    issues_patch_dir = args.issues_patch_dir
+    for filename in os.listdir(issues_patch_dir):
+        filename = issues_patch_dir + filename
+        new_filename = filename
+        for nickname_pg, nickname_gh in NICKNAME_LIST.items():
+            new_filename = new_filename.replace(nickname_pg, nickname_gh)
+
+        log.info(f"Replacing file {filename} to {new_filename}")
+        os.rename(filename, new_filename)
