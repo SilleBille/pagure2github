@@ -23,16 +23,16 @@ class PagureWorker:
     def comment_on_issue(self, pg_issue_id, gh_issue_id, g_repo):
         msg = textwrap.dedent(
             f"""
-        dogtagpki is moving from Pagure issues to Github issues. This means that new
-        issues will be reported only in [dogtagpki's github issues](https://github.com/{g_repo}/issues).
+        Dogtag PKI is moving from Pagure issues to GitHub issues. This means that existing or new
+        issues will be reported and tracked through Dogtag PKI's [GitHub Issue tracker](https://github.com/{g_repo}/issues).
 
-        This issue has been cloned to Github and is available here:
+        This issue has been cloned to GitHub and is available here:
         https://github.com/{g_repo}/issues/{gh_issue_id}
 
         If you want to receive further updates on the issue, please navigate to the
-        [github issue](https://github.com/{g_repo}/issues/{gh_issue_id}) and click on `subscribe` button.
+        [GitHub issue](https://github.com/{g_repo}/issues/{gh_issue_id}) and click on `Subscribe` button.
 
-        Thank you for understanding. We apologize for any inconvenience.
+        Thank you for understanding, and we apologize for any inconvenience.
         """
         ).strip()
         self.log.info(f"Updating issue {pg_issue_id} with {gh_issue_id}")
