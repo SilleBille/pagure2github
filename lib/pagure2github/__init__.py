@@ -361,9 +361,9 @@ def update_bugzillas(args, log):
         for line in f.readlines():
             if line.startswith("i"):
                 l_items = line.split(":")
-                if len(l_items) > 3:
-                    pg_issue_id = l_items[1]
-                    gh_issue_id = l_items[2]
+                pg_issue_id = l_items[1]
+                gh_issue_id = l_items[2]
+                if l_items[3].strip():
                     bz_ids = l_items[3].split(",")
                     for bz_id in bz_ids:
                         bz_id = bz_id.replace("\n", "")
@@ -374,7 +374,7 @@ def update_bugzillas(args, log):
                 else:
                     log.info(f"Skipping since no BZ linked to Pagure: {pg_issue_id}")
             else:
-                log.info(f"Line doesn't start with i. Wrong format found: {line}")
+                log.warning(f"Line doesn't start with i. Wrong format found: {line}")
 
 
 def close_unused_milestones(args, log):
